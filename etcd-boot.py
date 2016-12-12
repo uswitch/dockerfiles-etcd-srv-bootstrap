@@ -171,7 +171,7 @@ if __name__ == '__main__':
     z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
     z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
 
-    sleep(10) # Artificial delay for Amazons eventually consistent DNS
+    sleep(60) # Artificial delay for Amazons eventually consistent DNS
 
     new_env = {
             'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
