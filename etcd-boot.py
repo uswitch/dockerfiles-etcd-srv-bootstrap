@@ -183,7 +183,7 @@ if __name__ == '__main__':
             'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
             'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
             'ETCD_DISCOVERY_SRV': domain,
-            #'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
+            'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
     }
 
     execve('/etcd', ('etcd',), new_env)
