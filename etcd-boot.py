@@ -178,6 +178,7 @@ if __name__ == '__main__':
     sleep(60) # Artificial delay for Amazons eventually consistent DNS
 
     new_env = {
+            'ETCD_NAME': "{}.{}".format(my_name, domain),
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
             'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
             'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
