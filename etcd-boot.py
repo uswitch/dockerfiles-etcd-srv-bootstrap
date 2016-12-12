@@ -168,7 +168,7 @@ if __name__ == '__main__':
   z = Zone(domain)
 
   if argv[1] == 'up':
-    for ip in asg.ipv4s:
+    for ip in sorted(asg.ipv4s):
       my_name = "{}-{}".format(prefix, hexify(ip))
       z.updateA(my_name, ip)
 
