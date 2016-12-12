@@ -172,8 +172,8 @@ if __name__ == '__main__':
       my_name = "{}-{}".format(prefix, hexify(ip))
       z.updateA(my_name, ip)
 
-    z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
-    z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
+    z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
+    z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
 
     sleep(60) # Artificial delay for Amazons eventually consistent DNS
 
