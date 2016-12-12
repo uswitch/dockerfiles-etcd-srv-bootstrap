@@ -1,0 +1,8 @@
+publish:
+  docker:
+    repo: docker-registry-v2.uswitchinternal.com/uswitch/awscli
+    tag:
+      - latest
+    file: Dockerfile
+    storage_driver: overlay
+insecure: false
