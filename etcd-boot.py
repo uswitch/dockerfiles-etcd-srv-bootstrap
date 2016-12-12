@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import requests
 import boto3
+import json
 from sys import argv, exit
 from os import execve
 from time import sleep
@@ -119,10 +120,11 @@ class Zone(object):
       ttl=60,
       rr=[{'Value': host} for host in hosts]
     )
-    self.client.change_resource_record_sets(
+    print(json.dumps(batch))
+    print(self.client.change_resource_record_sets(
       HostedZoneId = self.id,
       ChangeBatch = batch
-    )
+    ))
 
   def deleteA(self, name, *hosts):
     batch = Zone.change_batch(
@@ -131,10 +133,11 @@ class Zone(object):
       rrtype='A',
       rr=[{'Value': host} for host in hosts]
     )
-    self.client.change_resource_record_sets(
+    print(json.dumps(batch))
+    print(self.client.change_resource_record_sets(
       HostedZoneId = self.id,
       ChangeBatch = batch
-    )
+    ))
 
 
   def updateSRV(self, name, *hosts):
@@ -145,10 +148,11 @@ class Zone(object):
       ttl=60,
       rr=[{'Value': host} for host in hosts]
     )
-    self.client.change_resource_record_sets(
+    print(json.dumps(batch))
+    print(self.client.change_resource_record_sets(
       HostedZoneId = self.id,
       ChangeBatch = batch
-    )
+    ))
 
 
 if __name__ == '__main__':
