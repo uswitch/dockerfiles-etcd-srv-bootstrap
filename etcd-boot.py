@@ -65,7 +65,7 @@ class Asg(object):
 
   @property
   def ipv4s(self):
-    instances = [r['Instances'][0] for r in self.members['Reservations']]
+    instances = [i for i in [r['Instances'] for r in self.members['Reservations']]]
     running = filter(lambda x: x['State']['Name'] in ('running', 'pending'), instances)
     return [i['PrivateIpAddress'] for i in running]
 
