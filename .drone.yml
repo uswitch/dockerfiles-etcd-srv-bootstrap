@@ -1,6 +1,6 @@
 publish:
   docker:
-    repo: docker-registry-v2.uswitchinternal.com/uswitch/awscli
+    repo: docker-registry-v2.uswitchinternal.com/uswitch/etcd-srv-bootstrap
     tag:
       - latest
     file: Dockerfile
