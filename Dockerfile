@@ -9,7 +9,7 @@ RUN apk --update --no-cache --virtual .builddeps add curl tar && \
     tar zxf etcd-${ETCD_VER}-linux-amd64.tar.gz  etcd-${ETCD_VER}-linux-amd64/etcd && \
     mv etcd-${ETCD_VER}-linux-amd64/etcd / && \
     rm -rf etcd-${ETCD_VER}-linux-amd64.tar.gz etcd-${ETCD_VER}-linux-amd64/ && \
-    pip3 install boto3 requests && \
+    pip install boto3 requests && \
     apk del .builddeps
 
 COPY etcd-boot.py /
