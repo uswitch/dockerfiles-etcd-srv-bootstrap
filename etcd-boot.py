@@ -2,7 +2,7 @@
 import requests
 import boto3
 from sys import argv, exit
-from os import execv
+from os import execve
 
 
 def hexify(ipv4):
@@ -170,7 +170,15 @@ if __name__ == '__main__':
     z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
     z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in asg.ipv4s])
 
-    execv('/etcd', ('etcd',))
+    new_env = {
+            'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
+            'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
+            'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
+            'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
+            'ETCD_DISCOVERY_SRV': domain
+    }
+
+    execve('/etcd', ('etcd',), new_env)
 
   elif argv[1] == 'down':
     z.deleteA("{}-{}".format(prefix, hexify(m.private_ipv4)), m.private_ipv4)
