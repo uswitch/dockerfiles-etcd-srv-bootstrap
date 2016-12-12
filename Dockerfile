@@ -14,4 +14,4 @@ RUN apk --update --no-cache --virtual .builddeps add curl tar && \
 
 COPY etcd-boot.py /
 
-ENTRYPOINT ['/etcd-boot.py']
+ENTRYPOINT ['/usr/local/bin/python', '/etcd-boot.py']
