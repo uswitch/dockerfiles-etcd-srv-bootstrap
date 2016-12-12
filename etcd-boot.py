@@ -178,10 +178,11 @@ if __name__ == '__main__':
     sleep(60) # Artificial delay for Amazons eventually consistent DNS
 
     new_env = {
+            'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
             'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
             'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
             'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
-            'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
+            'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379,http://127.0.0.1:2379",
             'ETCD_DISCOVERY_SRV': domain,
             'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
     }
