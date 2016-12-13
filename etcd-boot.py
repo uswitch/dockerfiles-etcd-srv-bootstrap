@@ -169,7 +169,7 @@ if __name__ == '__main__':
 
   if argv[1] == 'up':
     for ip in sorted(asg.ipv4s):
-      ,my_name = "{}-{}".format(prefix, hexify(ip))
+      my_name = "{}-{}".format(prefix, hexify(ip))
       z.updateA(my_name, ip)
 
     z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
