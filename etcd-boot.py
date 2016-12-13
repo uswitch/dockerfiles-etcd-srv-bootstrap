@@ -186,11 +186,11 @@ if __name__ == '__main__':
                 'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
                 'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
                 'ETCD_DISCOVERY_SRV': domain,
-                'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
+                # 'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
     }
     print("ETCD Environment:\n\n{}".format(json.dumps(new_env, indent=2)))
 
-    execve('/etcd', ('etcd','--debug'), new_env)
+    execve('/etcd', ('etcd',), new_env)
 
   elif argv[1] == 'down':
     z.deleteA("{}-{}".format(prefix, hexify(m.private_ipv4)), m.private_ipv4)
