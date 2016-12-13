@@ -166,7 +166,7 @@ if __name__ == '__main__':
   i = Instance(m.instance_id, m.region)
   asg = Asg(i.asg, m.region)
   z = Zone(domain)
-  my_name = "{}-{}".format(prefix, hexify(i.private_ipv4))
+  my_name = "{}-{}".format(prefix, hexify(m.private_ipv4))
 
   if argv[1] == 'up':
     for ip in sorted(asg.ipv4s):
