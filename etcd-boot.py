@@ -169,7 +169,7 @@ if __name__ == '__main__':
 
   if argv[1] == 'up':
     for ip in sorted(asg.ipv4s):
-      my_name = "{}-{}".format(prefix, hexify(ip))
+      ,my_name = "{}-{}".format(prefix, hexify(ip))
       z.updateA(my_name, ip)
 
     z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
@@ -178,18 +178,17 @@ if __name__ == '__main__':
     sleep(60) # Artificial delay for Amazons eventually consistent DNS
 
     new_env = {
-            'ETCD_NAME': "{}.{}".format(my_name, domain),
-            'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
-            'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
-            'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
-            'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
-            'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
-            'ETCD_DISCOVERY_SRV': domain,
-#            'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
+                'ETCD_NAME': "{}.{}".format(my_name, domain),
+                'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
+                'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
+                'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
+                'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
+                'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
+                'ETCD_DISCOVERY_SRV': domain,
+                'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
     }
 
-    execve('/etcd', ('etcd',), new_env)
+    execve('/etcd', ('etcd','--debug'), new_env)
 
   elif argv[1] == 'down':
     z.deleteA("{}-{}".format(prefix, hexify(m.private_ipv4)), m.private_ipv4)
-
