@@ -166,16 +166,17 @@ if __name__ == '__main__':
   i = Instance(m.instance_id, m.region)
   asg = Asg(i.asg, m.region)
   z = Zone(domain)
+  my_name = "{}-{}".format(prefix, hexify(i.private_ipv4))
 
   if argv[1] == 'up':
     for ip in sorted(asg.ipv4s):
-      my_name = "{}-{}".format(prefix, hexify(ip))
-      z.updateA(my_name, ip)
+      z.updateA("{}-{}".format(prefix, hexify(i.private_ipv4), ip)
 
     z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
     z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
 
     sleep(60) # Artificial delay for Amazons eventually consistent DNS
+    # TODO: replace this with waiting for DNS query to respond
 
     new_env = {
                 'ETCD_NAME': "{}".format(my_name),
