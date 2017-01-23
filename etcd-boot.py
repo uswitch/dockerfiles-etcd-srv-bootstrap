@@ -189,7 +189,7 @@ class Etcd(object):
         url = self._url("v2/members/{}".format(id))
         try:
             r = requests.delete(url)
-            print("Removing {} via {}, got {}".format(peerURLs, url, r.status_code))
+            print("Removing {} via {}, got {}".format(id, url, r.status_code))
             return r.status_code == 204
         except ConnectionError:
             return False
