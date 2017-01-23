@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import requests
-import boto3
-import json
 from sys import argv, exit
 from os import execve
 from time import sleep
+import requests
+from requests import ConnectionError
+import boto3
+import json
 
 
 def hexify(ipv4):
