@@ -171,7 +171,10 @@ class Etcd(object):
             return False
 
     def member_names(self):
-        return [m['name'] for m in self.members()]
+        try:
+            return [m['name'] for m in self.members()]
+        except TypeError:
+            return False
 
     def add(self, *peerURLs):
         try:
