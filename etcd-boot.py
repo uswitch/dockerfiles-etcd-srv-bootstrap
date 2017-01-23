@@ -203,6 +203,8 @@ if __name__ == '__main__':
         else:
             cluster_state = "existing"
         # TODO - Remove dead/old nodes
+        # Artificial Delay for slow Route53 updates :-(
+        sleep(10)
         new_env = {
             'ETCD_NAME': "{}".format(my_name),
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
