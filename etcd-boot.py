@@ -166,7 +166,7 @@ class Etcd(object):
         try:
             r = requests.get(self._url("/v2/members"))
             return (m['name'] for m in r.json()['members'])
-        except ConnectionError, ValueError, TypeError:
+        except (ConnectionError, ValueError, TypeError):
             return False
 
 
