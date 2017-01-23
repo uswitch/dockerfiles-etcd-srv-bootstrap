@@ -177,20 +177,19 @@ class Etcd(object):
             return False
 
     def add(self, *peerURLs):
+        url = self._url("/v2/members")
         try:
-            r = requests.post(
-                self._url("/v2/members"),
-                json = {'PeerURLs': peerURLs}
-            )
+            r = requests.post(url, json = {'PeerURLs': peerURLs})
+            print("Adding {} via {}, got {}".format(peerURLs, url, r.status_code))
             return r.status_code == 201
         except ConnectionError:
             return False
 
     def remove(self, id):
+        url = self._url("/v2/members/{}".format(id))
         try:
-            r = requests.delete(
-                self._url("/v2/members/{}".format(id))
-            )
+            r = requests.delete(url)
+            print("Removing {} via {}, got {}".format(peerURLs, url, r.status_code))
             return r.status_code == 204
         except ConnectionError:
             return False
