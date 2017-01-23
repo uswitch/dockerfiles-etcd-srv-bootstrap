@@ -193,15 +193,24 @@ if __name__ == '__main__':
         # SRV records
         z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
         z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
+
         # Try and get cluster status from an existing member and see if we are a member
         for ip in asg.ipv4s:
             e = Etcd(ip)
             members = e.member_names()
-            if members and my_name in members:
-                cluster_state = "new"
+            if members:
+                print("Member up at {}".format(ip))
+                if my_name in members:
+                    print("I am a member, assuming new cluster")
+                    cluster_state = "new"
+                else:
+                    print("I am not a member, assuming existing cluster")
+                    cluster_state = "existing"
                 break
         else:
-            cluster_state = "existing"
+            print("No peers were up, assming new cluster")
+            cluster_state = "new"
+
         # TODO - Remove dead/old nodes
         # Artificial Delay for slow Route53 updates :-(
         sleep(10)
