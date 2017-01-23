@@ -155,6 +155,21 @@ class Zone(object):
         ))
 
 
+class Etcd(object):
+    def __init__(self, host, port=2379, scheme='http'):
+        self.base_url = "{}://{}:{}".format(scheme, host, port)
+
+    def _url(self, path):
+        return "{}/{}".format(self.base_url, path)
+
+    def member_names(self):
+        try:
+            r = requests.get(self._url("/v2/members"))
+            return (m['name'] for m in r.json()['members'])
+        except ConnectionError, ValueError, TypeError:
+            return False
+
+
 if __name__ == '__main__':
     if len(argv) != 4 or argv[1] not in ('up', 'down'):
         print("Usage: <up|down> <prefix> <domain>\ne.g up etcd example.com")
@@ -169,16 +184,24 @@ if __name__ == '__main__':
     my_name = "{}-{}".format(prefix, hexify(m.private_ipv4))
 
     if argv[1] == 'up':
+        # Individual A records
         for ip in sorted(asg.ipv4s):
             z.updateA("{}-{}".format(prefix, hexify(ip)), ip)
+        # Shared A record
         z.updateA("{}".format(prefix), *asg.ipv4s)
-
+        # SRV records
         z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
         z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
-
-        sleep(60) # Artificial delay for Amazons eventually consistent DNS
-        # TODO: replace this with waiting for DNS query to respond
-
+        # Try and get cluster status from an existing member and see if we are a member
+        for ip in asg.ipv4s:
+            e = Etcd(ip)
+            next if not e
+            if my_name in e.member_names():
+                break
+                cluster_state = "new"
+        else:
+            cluster_state = "existing"
+        # TODO - Remove dead/old nodes
         new_env = {
             'ETCD_NAME': "{}".format(my_name),
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
@@ -187,7 +210,7 @@ if __name__ == '__main__':
             'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
             'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
             'ETCD_DISCOVERY_SRV': domain,
-            'ETCD_INITIAL_CLUSTER_STATE': 'new', #TODO discover this fact via TXT record or similar
+            'ETCD_INITIAL_CLUSTER_STATE': cluster_state,
         }
         print("ETCD Environment:\n\n{}".format(json.dumps(new_env, indent=2)))
 
