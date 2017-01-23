@@ -195,11 +195,9 @@ if __name__ == '__main__':
         # Try and get cluster status from an existing member and see if we are a member
         for ip in asg.ipv4s:
             e = Etcd(ip)
-            if not e:
-                next
-            if my_name in e.member_names():
-                break
+            if e and my_name in e.member_names():
                 cluster_state = "new"
+                break
         else:
             cluster_state = "existing"
         # TODO - Remove dead/old nodes
