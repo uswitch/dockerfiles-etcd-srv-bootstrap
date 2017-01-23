@@ -165,7 +165,7 @@ class Etcd(object):
 
     def members(self):
         try:
-            r = requests.get(self._url("/v2/members"))
+            r = requests.get(self._url("v2/members"))
             return r.json()['members']
         except (ConnectionError, ValueError, TypeError):
             return False
@@ -177,16 +177,16 @@ class Etcd(object):
             return False
 
     def add(self, *peerURLs):
-        url = self._url("/v2/members")
+        url = self._url("v2/members")
         try:
-            r = requests.post(url, json = {'PeerURLs': peerURLs})
+            r = requests.post(url, json={'PeerURLs': peerURLs})
             print("Adding {} via {}, got {}".format(peerURLs, url, r.status_code))
             return r.status_code == 201
         except ConnectionError:
             return False
 
     def remove(self, id):
-        url = self._url("/v2/members/{}".format(id))
+        url = self._url("v2/members/{}".format(id))
         try:
             r = requests.delete(url)
             print("Removing {} via {}, got {}".format(peerURLs, url, r.status_code))
@@ -242,11 +242,9 @@ if __name__ == '__main__':
             for member in e.members():
                 if member['name'] not in names:
                     # Bad member found, removing
-                    print("Removing member {} ({})".format(member['id'], member['name']))
-                    print("Ok" if e.remove(member['id']) else "Failed")
+                    e.remove(member['id'])
             # Add myself as a member
-            print("Adding new member {}".format(my_peerurl))
-            print("Ok" if e.add(my_peerurl) else "Failed")
+            e.add(my_peerurl)
 
         # Artificial Delay for slow Route53 updates :-(
         sleep(10)
