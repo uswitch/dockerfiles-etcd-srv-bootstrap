@@ -196,7 +196,8 @@ if __name__ == '__main__':
         # Try and get cluster status from an existing member and see if we are a member
         for ip in asg.ipv4s:
             e = Etcd(ip)
-            if e and my_name in e.member_names():
+            members = e.member_names()
+            if members and my_name in members:
                 cluster_state = "new"
                 break
         else:
