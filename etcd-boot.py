@@ -247,7 +247,7 @@ if __name__ == '__main__':
             e.add(my_peerurl)
 
         # Artificial Delay for slow Route53 updates :-(
-        sleep(10)
+        sleep(30)
 
         # Start etcd
         new_env = {
