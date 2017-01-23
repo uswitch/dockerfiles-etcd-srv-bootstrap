@@ -163,11 +163,34 @@ class Etcd(object):
     def _url(self, path):
         return "{}/{}".format(self.base_url, path)
 
-    def member_names(self):
+    def members(self):
         try:
             r = requests.get(self._url("/v2/members"))
-            return (m['name'] for m in r.json()['members'])
+            return r.json()['members']
         except (ConnectionError, ValueError, TypeError):
+            return False
+
+
+    def member_names(self):
+        return (m['name'] for m in self.members)
+
+    def add(self, *peerURLs):
+        try:
+            r = requests.post(
+                self._url("/v2/members"),
+                json = {'PeerURLs': peerURLs}
+            )
+            return r.status_code == 201
+        except ConnectionError:
+            return False
+
+    def remove(self, id):
+        try:
+            r = requests.delete(
+                self._url("/v2/members/{}".format(id))
+            )
+            return r.status_code == 204
+        except ConnectionError:
             return False
 
 
@@ -183,6 +206,7 @@ if __name__ == '__main__':
     asg = Asg(i.asg, m.region)
     z = Zone(domain)
     my_name = "{}-{}".format(prefix, hexify(m.private_ipv4))
+    my_peerurl = "http://{}.{}:2380".format(my_name,domain)
 
     if argv[1] == 'up':
         # Individual A records
@@ -208,17 +232,30 @@ if __name__ == '__main__':
                     cluster_state = "existing"
                 break
         else:
-            print("No peers were up, assming new cluster")
+            print("No peers were up, assuming new cluster")
             cluster_state = "new"
 
-        # TODO - Remove dead/old nodes
+        # Clean up any nodes that shouldn't be here
+        if cluster_state == "existing":
+            names = ["{}-{}".format(prefix, hexify(ip)) for ip in asg.ipv4s]
+            for member in e.members():
+                if member['name'] not in names:
+                    # Bad member found, removing
+                    print("Removing member {} ({})".format(member['id'], member['name']))
+                    print("Ok" if e.remove(member['id']) else "Failed")
+            # Add myself as a member
+            print("Adding new member {}".format(my_peerurl))
+            print("Ok" if e.add(my_peerurl) else "Failed")
+
         # Artificial Delay for slow Route53 updates :-(
         sleep(10)
+
+        # Start etcd
         new_env = {
             'ETCD_NAME': "{}".format(my_name),
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
             'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
-            'ETCD_INITIAL_ADVERTISE_PEER_URLS': 'http://{}.{}:2380'.format(my_name,domain),
+            'ETCD_INITIAL_ADVERTISE_PEER_URLS': my_peerurl,
             'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
             'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
             'ETCD_DISCOVERY_SRV': domain,
