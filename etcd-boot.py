@@ -170,9 +170,8 @@ class Etcd(object):
         except (ConnectionError, ValueError, TypeError):
             return False
 
-
     def member_names(self):
-        return (m['name'] for m in self.members)
+        return [m['name'] for m in self.members()]
 
     def add(self, *peerURLs):
         try:
