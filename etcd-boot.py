@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 from sys import argv, exit
 from os import execve
 from time import sleep
@@ -196,11 +197,12 @@ class Etcd(object):
 
 
 if __name__ == '__main__':
-    if len(argv) != 4 or argv[1] not in ('up', 'down'):
-        print("Usage: <up|down> <prefix> <domain>\ne.g up etcd example.com")
+    if len(argv) < 4 or argv[1] not in ('up', 'down'):
+        print("Usage: <up|down> <prefix> <domain> [optional args to etcd]\ne.g up etcd example.com")
         exit(101)
     prefix = argv[2]
     domain = argv[3]
+    etcd_args = argv[4:] if len(argv) > 4 else []
 
     m = MetaData()
     i = Instance(m.instance_id, m.region)
@@ -262,7 +264,7 @@ if __name__ == '__main__':
         }
         print("ETCD Environment:\n\n{}".format(json.dumps(new_env, indent=2)))
 
-        execve('/etcd', ('etcd',), new_env)
+        execve('/etcd', ['etcd'] + etcd_args, new_env)
 
     elif argv[1] == 'down':
         z.deleteA("{}-{}".format(prefix, hexify(m.private_ipv4)), m.private_ipv4)
