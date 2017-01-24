@@ -255,10 +255,10 @@ if __name__ == '__main__':
         new_env = {
             'ETCD_NAME': "{}".format(my_name),
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
-            'ETCD_ADVERTISE_CLIENT_URLS': 'http://{}:2379'.format(m.private_ipv4),
+            'ETCD_ADVERTISE_CLIENT_URLS': 'https://{}:2379'.format(m.private_ipv4),
             'ETCD_INITIAL_ADVERTISE_PEER_URLS': my_peerurl,
-            'ETCD_LISTEN_PEER_URLS': "http://0.0.0.0:2380",
-            'ETCD_LISTEN_CLIENT_URLS': "http://0.0.0.0:2379",
+            'ETCD_LISTEN_PEER_URLS': "https://0.0.0.0:2380",
+            'ETCD_LISTEN_CLIENT_URLS': "https://0.0.0.0:2379",
             'ETCD_DISCOVERY_SRV': domain,
             'ETCD_INITIAL_CLUSTER_STATE': cluster_state,
         }
