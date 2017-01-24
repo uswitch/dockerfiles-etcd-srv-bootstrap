@@ -209,7 +209,7 @@ if __name__ == '__main__':
     asg = Asg(i.asg, m.region)
     z = Zone(domain)
     my_name = "{}-{}".format(prefix, hexify(m.private_ipv4))
-    my_peerurl = "http://{}.{}:2380".format(my_name,domain)
+    my_peerurl = "https://{}.{}:2380".format(my_name,domain)
 
     if argv[1] == 'up':
         # Individual A records
