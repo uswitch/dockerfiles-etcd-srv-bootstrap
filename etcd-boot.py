@@ -218,8 +218,8 @@ if __name__ == '__main__':
         # Shared A record
         z.updateA("{}".format(prefix), *asg.ipv4s)
         # SRV records
-        z.updateSRV('_etcd-server._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
-        z.updateSRV('_etcd-client._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
+        z.updateSRV('_etcd-server-ssl._tcp', *["0 0 2380 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
+        z.updateSRV('_etcd-client-ssl._tcp', *["0 0 2379 {}-{}.{}".format(prefix, hexify(ip), z.name) for ip in sorted(asg.ipv4s)])
 
         # Try and get cluster status from an existing member and see if we are a member
         for ip in asg.ipv4s:
