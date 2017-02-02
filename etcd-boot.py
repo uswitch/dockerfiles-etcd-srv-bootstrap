@@ -211,8 +211,8 @@ if __name__ == '__main__':
 
     etcd_ssl = dict(
         ca=getenv('ETCD_CACERT'),
-        cert=getenv('ETCD_CERT'),
-        key=getenv('ETCD_KEY')
+        cert=getenv('ETCD_CLIENT_CERT'),
+        key=getenv('ETCD_CLIENT_KEY')
     )
 
     m = MetaData()
