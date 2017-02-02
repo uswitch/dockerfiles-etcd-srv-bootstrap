@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import argparse
 from sys import argv, exit
-from os import execve
+from os import execve, getenv
 from time import sleep
 import requests
 from requests import ConnectionError
@@ -158,7 +158,12 @@ class Zone(object):
 
 
 class Etcd(object):
-    def __init__(self, host, port=2379, scheme='http'):
+    def __init__(self, host, port=2379, scheme='https', ca=None, cert=None, key=None):
+        self.ssl_params = {}
+        if ca:
+            self.ssl_params['verify'] = ca
+        if cert and key:
+            self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
 
     def _url(self, path):
@@ -166,7 +171,7 @@ class Etcd(object):
 
     def members(self):
         try:
-            r = requests.get(self._url("v2/members"))
+            r = requests.get(self._url("v2/members"), **self.ssl_params)
             return r.json()['members']
         except (ConnectionError, ValueError, TypeError):
             return False
@@ -180,7 +185,7 @@ class Etcd(object):
     def add(self, *peerURLs):
         url = self._url("v2/members")
         try:
-            r = requests.post(url, json={'PeerURLs': peerURLs})
+            r = requests.post(url, json={'PeerURLs': peerURLs}, **self.ssl_params)
             print("Adding {} via {}, got {}".format(peerURLs, url, r.status_code))
             return r.status_code == 201
         except ConnectionError:
@@ -189,7 +194,7 @@ class Etcd(object):
     def remove(self, id):
         url = self._url("v2/members/{}".format(id))
         try:
-            r = requests.delete(url)
+            r = requests.delete(url, **self.ssl_params)
             print("Removing {} via {}, got {}".format(id, url, r.status_code))
             return r.status_code == 204
         except ConnectionError:
@@ -203,6 +208,12 @@ if __name__ == '__main__':
     prefix = argv[2]
     domain = argv[3]
     etcd_args = argv[4:] if len(argv) > 4 else []
+
+    etcd_ssl = dict(
+        ca=getenv('ETCD_CACERT'),
+        cert=getenv('ETCD_CERT'),
+        key=getenv('ETCD_KEY')
+    )
 
     m = MetaData()
     i = Instance(m.instance_id, m.region)
@@ -223,7 +234,7 @@ if __name__ == '__main__':
 
         # Try and get cluster status from an existing member and see if we are a member
         for ip in asg.ipv4s:
-            e = Etcd(ip)
+            e = Etcd(ip, **etcd_ssl)
             members = e.member_names()
             if members:
                 print("Member up at {}".format(ip))
