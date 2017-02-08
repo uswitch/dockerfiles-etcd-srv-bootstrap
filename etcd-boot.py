@@ -164,6 +164,7 @@ class Etcd(object):
         if cert and key:
             self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
+        print("New Etcd object: {}, {}".format(self.base_url, self.ssl_params))
 
     def _url(self, path):
         return "{}/{}".format(self.base_url, path)
