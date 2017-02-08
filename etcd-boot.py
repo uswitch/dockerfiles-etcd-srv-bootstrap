@@ -164,7 +164,6 @@ class Etcd(object):
         if cert and key:
             self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
-        print("New Etcd object: {}, {}".format(self.base_url, self.ssl_params))
 
     def _url(self, path):
         return "{}/{}".format(self.base_url, path)
@@ -174,8 +173,8 @@ class Etcd(object):
             r = requests.get(self._url("v2/members"), **self.ssl_params)
             print("Got members from {} with {}".format(self.base_url, self.ssl_params))
             return r.json()['members']
-        except (requests.ConnectionError, ValueError, TypeError):
-            print("Failed to get members from {} with {}".format(self.base_url, self.ssl_params))
+        except (requests.ConnectionError, ValueError, TypeError) as e:
+            print("Failed to get members from {} with {}.\n{}".format(self.base_url, self.ssl_params, e))
             return False
 
     def member_names(self):
