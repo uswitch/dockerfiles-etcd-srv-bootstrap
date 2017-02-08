@@ -158,9 +158,7 @@ class Zone(object):
 
 class Etcd(object):
     def __init__(self, host, port=2379, scheme='https', ca=None, cert=None, key=None):
-        self.ssl_params = {}
-        if ca:
-            self.ssl_params['verify'] = ca
+        self.ssl_params = {'verify': ca}
         if cert and key:
             self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
