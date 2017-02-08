@@ -4,7 +4,6 @@ from sys import argv, exit
 from os import execve, getenv
 from time import sleep
 import requests
-from requests import ConnectionError
 import boto3
 import json
 
@@ -172,8 +171,10 @@ class Etcd(object):
     def members(self):
         try:
             r = requests.get(self._url("v2/members"), **self.ssl_params)
+            print("Got members from {} with {}".format(self.base_url, self.ssl_params))
             return r.json()['members']
-        except (ConnectionError, ValueError, TypeError):
+        except (requests.ConnectionError, ValueError, TypeError):
+            print("Failed to get members from {} with {}".format(self.base_url, self.ssl_params))
             return False
 
     def member_names(self):
@@ -188,7 +189,7 @@ class Etcd(object):
             r = requests.post(url, json={'PeerURLs': peerURLs}, **self.ssl_params)
             print("Adding {} via {}, got {}".format(peerURLs, url, r.status_code))
             return r.status_code == 201
-        except ConnectionError:
+        except requests.ConnectionError:
             return False
 
     def remove(self, id):
@@ -197,7 +198,7 @@ class Etcd(object):
             r = requests.delete(url, **self.ssl_params)
             print("Removing {} via {}, got {}".format(id, url, r.status_code))
             return r.status_code == 204
-        except ConnectionError:
+        except requests.ConnectionError:
             return False
 
 
