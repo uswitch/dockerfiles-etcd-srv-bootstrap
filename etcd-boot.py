@@ -67,7 +67,7 @@ class Asg(object):
     @property
     def ipv4s(self):
         instances = sum([i for i in (r['Instances'] for r in self.members['Reservations'])], [])
-        running = filter(lambda x: x['State']['Name'] in ('running', 'pending'), instances)
+        running = [x for x in instances if x['State']['Name'] in ('running', 'pending')]
         return [i['PrivateIpAddress'] for i in running]
 
 
@@ -81,7 +81,7 @@ class Zone(object):
         self.zone = None
         zone_name = name.split('.')
         for i in range(len(zone_name)):
-            zone = filter(lambda x: x['Name'].rstrip('.') == '.'.join(zone_name[i:]), all_zones)
+            zone = [x for x in all_zones if x['Name'].rstrip('.') == '.'.join(zone_name[i:])]
             if len(zone) == 1:
                 self.zone = zone[0]
                 self.zone_name = '.'.join(zone_name[i:])
