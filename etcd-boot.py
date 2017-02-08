@@ -212,10 +212,11 @@ if __name__ == '__main__':
     etcd_args = argv[4:] if len(argv) > 4 else []
 
     etcd_ssl = dict(
-        ca=getenv('ETCD_CACERT'),
-        cert=getenv('ETCD_CLIENT_CERT'),
-        key=getenv('ETCD_CLIENT_KEY')
+        ca=getenv('CA'),
+        cert=getenv('CERT'),
+        key=getenv('KEY')
     )
+    print("Got TLS settings from env ... \n{}".format(etcd_ssl))
 
     m = MetaData()
     i = Instance(m.instance_id, m.region)
