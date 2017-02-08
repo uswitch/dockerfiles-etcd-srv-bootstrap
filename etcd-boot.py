@@ -48,7 +48,7 @@ class Instance(object):
 
     @property
     def asg(self):
-        return filter(lambda x: x['Key'] == 'aws:autoscaling:groupName', self.tags)[0]['Value']
+        return [x['Value'] for x in self.tags if x['Key'] == 'aws:autoscaling:groupName'][0]
 
 
 class Asg(object):
