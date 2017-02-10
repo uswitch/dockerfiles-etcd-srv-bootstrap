@@ -270,7 +270,7 @@ if __name__ == '__main__':
             names_from_etcd = [member['name'] for members in e.members()]
             for ip in asg_ips:
                 if Etcd.membername(prefix, ip) not in names_from_etcd:
-                    e.add(Etcd.peerurl(prefix, ip, domain)
+                    e.add(Etcd.peerurl(prefix, ip, domain))
 
         # if cluster_state == "existing":
         #     names = ["{}-{}".format(prefix, hexify(ip)) for ip in asg.ipv4s]
