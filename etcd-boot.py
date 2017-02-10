@@ -265,7 +265,7 @@ if __name__ == '__main__':
         # Start etcd
         new_env = {
             'ETCD_NAME': "{}".format(my_name),
-            'ETCD_DATA_DIR': "/etcd",
+            'ETCD_DATA_DIR': "/etcd-data",
             'ETCD_INITIAL_CLUSTER_TOKEN': "{}.{}".format(prefix, domain),
             'ETCD_ADVERTISE_CLIENT_URLS': 'https://{}:2379'.format(m.private_ipv4),
             'ETCD_INITIAL_ADVERTISE_PEER_URLS': my_peerurl,
