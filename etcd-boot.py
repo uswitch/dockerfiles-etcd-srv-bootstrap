@@ -163,11 +163,11 @@ class Etcd(object):
             self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
 
-    @classmethod
+    @staticmethod
     def membername(prefix, ip):
         return "{}-{}".format(prefix, hexify(ip))
 
-    @classmethod
+    @staticmethod
     def peerurl(prefix, ip, domain):
         return "https://{}.{}:2380".format(Etcd.membername(prefix, ip) ,domain)
 
@@ -261,7 +261,7 @@ if __name__ == '__main__':
         if cluster_state == "existing":
             asg_ips = asg.ipv4s
             # Are there any nodes that shouldn't be there?
-            names_from_asg = [Etcd.membername(prefix, hexify(ip)) for ip in asg_ips]
+            names_from_asg = [Etcd.membername(prefix, ip) for ip in asg_ips]
             for member in e.members():
                 if member['name'] not in names:
                     # Bad member found, removing
