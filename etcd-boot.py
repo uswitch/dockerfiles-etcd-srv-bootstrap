@@ -163,6 +163,14 @@ class Etcd(object):
             self.ssl_params['cert'] = (cert, key)
         self.base_url = "{}://{}:{}".format(scheme, host, port)
 
+    @classmethod
+    def membername(prefix, ip):
+        return "{}-{}".format(prefix, hexify(ip))
+
+    @classmethod
+    def peerurl(prefix, ip, domain):
+        return "https://{}.{}:2380".format(Etcd.membername(prefix, ip) ,domain)
+
     def _url(self, path):
         return "{}/{}".format(self.base_url, path)
 
@@ -220,7 +228,7 @@ if __name__ == '__main__':
     asg = Asg(i.asg, m.region)
     z = Zone(domain)
     my_name = "{}-{}".format(prefix, hexify(m.private_ipv4))
-    my_peerurl = "https://{}.{}:2380".format(my_name,domain)
+    my_peerurl = Etcd.peerurl(prefix, m.private_ipv4, domain)
 
     if argv[1] == 'up':
         # Individual A records
@@ -251,13 +259,27 @@ if __name__ == '__main__':
 
         # Clean up any nodes that shouldn't be here
         if cluster_state == "existing":
-            names = ["{}-{}".format(prefix, hexify(ip)) for ip in asg.ipv4s]
+            asg_ips = asg.ipv4s
+            # Are there any nodes that shouldn't be there?
+            names_from_asg = [Etcd.membername(prefix, hexify(ip)) for ip in asg_ips]
             for member in e.members():
                 if member['name'] not in names:
                     # Bad member found, removing
                     e.remove(member['id'])
-            # Add myself as a member
-            e.add(my_peerurl)
+            # Are there any nodes missing?
+            names_from_etcd = [member['name'] for members in e.members()]
+            for ip in asg_ips:
+                if Etcd.membername(ip) not in names_from_etcd:
+                    e.add(Etcd.peerurl(prefix, ip))
+
+        # if cluster_state == "existing":
+        #     names = ["{}-{}".format(prefix, hexify(ip)) for ip in asg.ipv4s]
+        #     for member in e.members():
+        #         if member['name'] not in names:
+        #             # Bad member found, removing
+        #             e.remove(member['id'])
+        #     # Add myself as a member
+        #     e.add(my_peerurl)
 
         # Artificial Delay for slow Route53 updates :-(
         sleep(30)
