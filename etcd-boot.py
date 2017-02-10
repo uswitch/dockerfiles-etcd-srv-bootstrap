@@ -263,7 +263,7 @@ if __name__ == '__main__':
             # Are there any nodes that shouldn't be there?
             names_from_asg = [Etcd.membername(prefix, ip) for ip in asg_ips]
             for member in e.members():
-                if member['name'] not in names:
+                if member['name'] not in names_from_asg:
                     # Bad member found, removing
                     e.remove(member['id'])
             # Are there any nodes missing?
