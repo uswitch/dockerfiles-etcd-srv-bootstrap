@@ -9,11 +9,11 @@ pipeline:
       event: push
       branch: master
 
-   docker-versioned:
-     image: plugins/docker
-     repo: registry.usw.co/uswitch/etcd-srv-bootstrap
-     tag:
-       - ${DRONE_TAG}
-     dockerfile: Dockerfile
-     when:
-       event: tag
+  docker-versioned:
+    image: plugins/docker
+    repo: registry.usw.co/uswitch/etcd-srv-bootstrap
+    tag:
+     - ${DRONE_TAG}
+    dockerfile: Dockerfile
+    when:
+      event: tag
