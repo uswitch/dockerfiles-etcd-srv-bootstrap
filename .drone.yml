@@ -1,8 +1,19 @@
-publish:
-  docker:
-    repo: docker-registry-v2.uswitchinternal.com/uswitch/etcd-srv-bootstrap
+pipeline:
+  docker-latest:
+    image: plugins/docker
+    repo: registry.usw.co/uswitch/etcd-srv-bootstrap
     tag:
       - latest
-    file: Dockerfile
-    storage_driver: overlay
-insecure: false
+    dockerfile: Dockerfile
+    when:
+      event: push
+      branch: master
+
+   docker-versioned:
+     image: plugins/docker
+     repo: registry.usw.co/uswitch/etcd-srv-bootstrap
+     tag:
+       - ${DRONE_TAG}
+     dockerfile: Dockerfile
+     when:
+       event: tag
