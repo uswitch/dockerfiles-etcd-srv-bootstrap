@@ -228,6 +228,8 @@ if __name__ == '__main__':
     asg = Asg(i.asg, m.region)
     z = Zone(domain)
     my_name = "{}-{}-{}".format(prefix, hexify(m.private_ipv4), m.instance_id)
+    # Make the peerurl unique
+    prefix = prefix + m.instance_id
     my_peerurl = Etcd.peerurl(prefix, m.private_ipv4, domain)
 
     if argv[1] == 'up':
