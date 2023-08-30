@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.9.17-alpine
 MAINTAINER Tom Taylor <tom.taylor@uswitch.com>
 
 EXPOSE 2379 2380
